@@ -1,0 +1,6 @@
+{
+  "name": "TicketNest",
+  "description": "Smart event booking and management platform with high-concurrency ticket reservations, multi-tenant organizer portals, simulated payments, and real-time sales analytics.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

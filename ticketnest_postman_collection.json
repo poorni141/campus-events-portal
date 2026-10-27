@@ -1,0 +1,275 @@
+{
+  "info": {
+    "name": "TicketNest API Collection",
+    "description": "Complete REST API Collection for TicketNest Smart Event Booking and Management Platform",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register Attendee",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Sarah Jenkins\",\n  \"email\": \"sarah.jenkins@example.com\",\n  \"role\": \"ATTENDEE\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/register"
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"sarah.jenkins@example.com\"\n}"
+            },
+            "url": "{{baseUrl}}/api/auth/login"
+          }
+        },
+        {
+          "name": "Get Current User Profile",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "x-user-id", "value": "usr-attendee-1" }],
+            "url": "{{baseUrl}}/api/auth/me"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Public Events Discovery",
+      "item": [
+        {
+          "name": "List Events (Cached with Filters)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/events?category=Music&city=Bengaluru"
+          }
+        },
+        {
+          "name": "Get Event Details by ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/events/evt-soundwave-2026"
+          }
+        },
+        {
+          "name": "Get Event Categories",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/events/categories"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reservations Engine",
+      "item": [
+        {
+          "name": "Create 10-Minute Hold Reservation",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-user-id", "value": "usr-attendee-1" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"eventId\": \"evt-soundwave-2026\",\n  \"items\": [\n    {\n      \"ticketCategoryId\": \"tc-sw-plat\",\n      \"quantity\": 2\n    }\n  ],\n  \"idempotencyKey\": \"idem-postman-req-001\"\n}"
+            },
+            "url": "{{baseUrl}}/api/reservations"
+          }
+        },
+        {
+          "name": "Get Reservation by ID",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/reservations/{{reservationId}}"
+          }
+        },
+        {
+          "name": "Cancel Reservation Early",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/reservations/{{reservationId}}/cancel"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Simulated Payments",
+      "item": [
+        {
+          "name": "Initiate Payment",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-user-id", "value": "usr-attendee-1" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reservationId\": \"{{reservationId}}\",\n  \"paymentMethod\": \"SIMULATED_CARD\",\n  \"idempotencyKey\": \"idem-pay-001\"\n}"
+            },
+            "url": "{{baseUrl}}/api/payments/initiate"
+          }
+        },
+        {
+          "name": "Simulate Payment Approval",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"APPROVE\",\n  \"delayMs\": 300\n}"
+            },
+            "url": "{{baseUrl}}/api/payments/{{transactionId}}/simulate"
+          }
+        },
+        {
+          "name": "Simulate Payment Rejection",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"action\": \"REJECT\",\n  \"failureReason\": \"Card limit reached\"\n}"
+            },
+            "url": "{{baseUrl}}/api/payments/{{transactionId}}/simulate"
+          }
+        },
+        {
+          "name": "Payment Webhook Callback",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"gatewayRef\": \"{{gatewayRef}}\",\n  \"event\": \"payment.captured\",\n  \"signature\": \"sig_postman_test\",\n  \"timestamp\": 1730000000000\n}"
+            },
+            "url": "{{baseUrl}}/api/payments/webhook"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Attendee Orders",
+      "item": [
+        {
+          "name": "List User Orders",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "x-user-id", "value": "usr-attendee-1" }],
+            "url": "{{baseUrl}}/api/orders"
+          }
+        },
+        {
+          "name": "Get Order Confirmation & QR Pass",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "x-user-id", "value": "usr-attendee-1" }],
+            "url": "{{baseUrl}}/api/orders/ord-seed-sarah-1"
+          }
+        },
+        {
+          "name": "Cancel Eligible Booking",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "x-user-id", "value": "usr-attendee-1" }],
+            "url": "{{baseUrl}}/api/orders/ord-seed-sarah-1/cancel"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Organizer Portal",
+      "item": [
+        {
+          "name": "List Organizer Events (Tenant Isolated)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "x-user-id", "value": "usr-org-1" }],
+            "url": "{{baseUrl}}/api/organizer/events"
+          }
+        },
+        {
+          "name": "Create Event",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-user-id", "value": "usr-org-1" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Aura Midnight Live Series\",\n  \"category\": \"Music\",\n  \"venueName\": \"Aura Arena Rooftop\",\n  \"city\": \"Bengaluru\",\n  \"eventDate\": \"2026-12-25T20:00:00.000Z\",\n  \"maxCapacity\": 800\n}"
+            },
+            "url": "{{baseUrl}}/api/organizer/events"
+          }
+        },
+        {
+          "name": "Add Ticket Tier",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "x-user-id", "value": "usr-org-1" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Early Bird Silver Pass\",\n  \"price\": 799,\n  \"quantity\": 200\n}"
+            },
+            "url": "{{baseUrl}}/api/organizer/events/evt-soundwave-2026/tickets"
+          }
+        },
+        {
+          "name": "Get Organizer Analytics Overview",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "x-user-id", "value": "usr-org-1" }],
+            "url": "{{baseUrl}}/api/organizer/analytics/overview"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Administrator & Concurrency Lab",
+      "item": [
+        {
+          "name": "Run 20-Attendee Concurrency Test (Strict 10 Tickets)",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/system/simulate-concurrency"
+          }
+        },
+        {
+          "name": "Trigger Expiration Worker Sweep",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/system/trigger-sweep"
+          }
+        },
+        {
+          "name": "Admin Platform Stats",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "x-user-id", "value": "usr-admin-1" }],
+            "url": "{{baseUrl}}/api/admin/stats"
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "reservationId", "value": "res-demo" },
+    { "key": "transactionId", "value": "tx-demo" },
+    { "key": "gatewayRef", "value": "PAY-SIM-123456" }
+  ]
+}
